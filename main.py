@@ -6,6 +6,10 @@ import urllib.request
 from pathlib import Path
 from typing import List, NamedTuple
 
+import os
+
+from utils import Sound, TimeForSoundChecker, play_alarm, has_violations
+
 try:
     from typing import Literal
 except ImportError:
@@ -171,6 +175,8 @@ def convertBack(x, y, w, h):
 
 def app_object_detection():
 
+    checker = TimeForSoundChecker()
+
     class Video(VideoProcessorBase):
 
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
@@ -181,6 +187,11 @@ def app_object_detection():
     
             classes2, scores2, boxes2 = model2.detect(
                 image, Conf_threshold, NMS_threshold)
+            
+            if checker.has_been_a_second():
+                if has_violations(classes2):
+                    play_alarm()
+
 
             centroids = []
             violate = set()
