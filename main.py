@@ -192,8 +192,8 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
     while webrtc_ctx.video_processor:
         if webrtc_ctx.video_processor:
             kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
-            kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
-            kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
+            # kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
+            # kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
 
 class Video(VideoProcessorBase):
 
