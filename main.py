@@ -183,21 +183,26 @@ def app_object_detection():
 
     class Video(VideoProcessorBase):
 
+        def __init__(self):
+            self.scViolators = 0
+            self.fmViolators = 0
+            self.fsViolators = 0
+
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
             image = frame.to_ndarray(format="bgr24")
 
             classes, scores, boxes = model.detect(
                 image, Conf_threshold2, NMS_threshold2)
-    
+
             classes2, scores2, boxes2 = model2.detect(
                 image, Conf_threshold, NMS_threshold)
             
-            centroids = []
-            violate = set()
             centroid_dict = dict() 
             objectId = 0
             red_zone_list = []
             red_line_list = []
+            no_face_mask =[]
+            no_face_shield = []
 
             for i , (classid, score, box) in enumerate (zip(classes, scores, boxes)):
                 if classid == 0:
@@ -223,17 +228,12 @@ def app_object_detection():
                         red_zone_list.append(id2)	
                         red_line_list.append(p2[6])
 
-
             for idx, box in centroid_dict.items():
                 if idx in red_zone_list:  
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 0, 255), 2)
-
                 else:
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2)
                 
-            text = "Social Distancing Violations: {}".format(len(red_zone_list))
-            cv2.putText(image, text, (10, image.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
-
             for check in range(0, len(red_line_list)-1):					
                 start_point = red_line_list[check] 
                 end_point = red_line_list[check+1]
