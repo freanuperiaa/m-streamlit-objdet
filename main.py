@@ -26,8 +26,8 @@ from aiortc.contrib.media import MediaPlayer
 import time
 import pandas as pd
 import math
+from scipy.spatial import distance as dist
 from itertools import combinations
-import beepy
 
 from streamlit_webrtc import (
     AudioProcessorBase,
