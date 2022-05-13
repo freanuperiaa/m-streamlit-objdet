@@ -233,6 +233,7 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 0, 255), 2)
                 else:
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2)
+                self.scViolators = len(red_zone_list)
                 
             for check in range(0, len(red_line_list)-1):					
                 start_point = red_line_list[check] 
@@ -252,6 +253,12 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
                     cv2.rectangle(image, box, color, 1)
                     cv2.putText(image, label, (box[0], box[1]-10),
                                 cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
+                    if classid == 3:
+                        no_face_mask.append(score)
+                    if classid == 1:
+                        no_face_shield.append(score)
+                self.fmViolators = len(no_face_mask)
+                self.fsViolators = len(no_face_shield)
 
             return av.VideoFrame.from_ndarray(image, format="bgr24")
 
