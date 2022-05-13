@@ -261,8 +261,8 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
                         no_face_mask.append(i)
                     if classid == 1:
                         no_face_shield.append(i)
-                    self.fmViolators = len(red_zone_list)
-                    self.fsViolators = len(red_zone_list)
+                    self.fmViolators = len(no_face_mask)
+                    self.fsViolators = len( no_face_shield)
 
             return av.VideoFrame.from_ndarray(image, format="bgr24")
 
