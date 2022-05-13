@@ -181,7 +181,21 @@ def convertBack(x, y, w, h):
 
 def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
 
-    class Video(VideoProcessorBase):
+    webrtc_ctx = webrtc_streamer(
+        key="object-detection",
+        mode=WebRtcMode.SENDRECV,
+        client_settings=WEBRTC_CLIENT_SETTINGS,
+        video_processor_factory=Video,
+        async_processing=True,
+    )
+
+    while webrtc_ctx.video_processor:
+        if webrtc_ctx.video_processor:
+            kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
+            kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
+            kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
+
+class Video(VideoProcessorBase):
 
         def __init__(self):
             self.scViolators = 0
@@ -265,20 +279,6 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
                     self.fsViolators = len( no_face_shield)
 
             return av.VideoFrame.from_ndarray(image, format="bgr24")
-
-    webrtc_ctx = webrtc_streamer(
-        key="object-detection",
-        mode=WebRtcMode.SENDRECV,
-        client_settings=WEBRTC_CLIENT_SETTINGS,
-        video_processor_factory=Video,
-        async_processing=True,
-    )
-
-    while webrtc_ctx.video_processor:
-        if webrtc_ctx.video_processor:
-            kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
-            kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
-            kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
 
 
 if __name__ == "__main__":
