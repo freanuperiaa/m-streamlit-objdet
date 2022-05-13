@@ -207,10 +207,6 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
             for i , (classid, score, box) in enumerate (zip(classes, scores, boxes)):
                 if classid == 0:
                     centerCoord = (int(box[0]+(box[2]/2)), int(box[1]+(box[3]/2)))
-                    # color = (0, 255, 0)
-                    # label = "%s : %f" % (class_name[classid[0]], score)
-                    # cv2.putText(image, label, (box[0], box[1]-10),
-                    #             cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
                     cv2.circle(image, centerCoord, 5, (255, 0, 0), 1) 
                     x, y, w, h= box
                     xmin, ymin, xmax, ymax = convertBack(float(x), float(y), float(w), float(h))
