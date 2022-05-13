@@ -71,7 +71,7 @@ def main():
         st.markdown("Face Shield Violations")
         kpi3_text = st.markdown('0')
 
-    app_object_detection(kpi1_text)
+    app_object_detection()
 
     st.error('Please allow access to camera and microphone in order for this to work')
     st.warning(
