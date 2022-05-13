@@ -60,7 +60,18 @@ def main():
 
     st.info("Please wait for 30-40 seconds for the webcam to load with the dependencies")
 
-    app_object_detection()
+    kpi1, kpi2, kpi3 = st.columns(3)
+    with kpi1:
+        st.markdown("Social Distancing Violations")
+        kpi1_text = st.markdown('0')
+    with kpi2:
+        st.markdown("Face Mask Violations")
+        kpi2_text = st.markdown('0')
+    with kpi3:
+        st.markdown("Face Shield Violations")
+        kpi3_text = st.markdown('0')
+
+    app_object_detection(kpi1_text)
 
     st.error('Please allow access to camera and microphone in order for this to work')
     st.warning(
@@ -170,9 +181,12 @@ def convertBack(x, y, w, h):
 
 def app_object_detection():
 
-    # checker = TimeForSoundChecker()
-
     class Video(VideoProcessorBase):
+
+        def __init__(self):
+            self.scViolators = 0
+            self.fmViolators = 0
+            self.fsViolators = 0
 
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
             image = frame.to_ndarray(format="bgr24")
@@ -183,17 +197,14 @@ def app_object_detection():
             classes2, scores2, boxes2 = model2.detect(
                 image, Conf_threshold, NMS_threshold)
             
-            # if checker.has_been_a_second():
-            #     if has_violations(classes2):
-            #         play_alarm()
-
-
             centroids = []
             violate = set()
             centroid_dict = dict() 
             objectId = 0
             red_zone_list = []
             red_line_list = []
+            no_face_mask = []
+            no_face_shield = []
 
             for i , (classid, score, box) in enumerate (zip(classes, scores, boxes)):
                 if classid == 0:
@@ -227,8 +238,7 @@ def app_object_detection():
                 else:
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2)
                 
-            text = "Social Distancing Violations: {}".format(len(red_zone_list))
-            cv2.putText(image, text, (10, image.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
+                self.scViolators = len(red_zone_list)
 
             for check in range(0, len(red_line_list)-1):					
                 start_point = red_line_list[check] 
@@ -238,9 +248,8 @@ def app_object_detection():
                 if (check_line_x < MIN_DISTANCE) and (check_line_y < 25):			
                     cv2.line(image, start_point, end_point, (255, 0, 0), 2) 
 
-            for (classid, score, box) in zip(classes2, scores2, boxes2):
+            for i , (classid, score, box) in enumerate (zip(classes2, scores2, boxes2)):
                 if classid != 4:
-                    
                     color = COLORS[int(classid) % len(COLORS)]
 
                     label = "%s : %f" % (class_name2[classid[0]], score)
@@ -248,6 +257,12 @@ def app_object_detection():
                     cv2.rectangle(image, box, color, 1)
                     cv2.putText(image, label, (box[0], box[1]-10),
                                 cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
+                    if classid == 3:
+                        no_face_mask.append(i)
+                    if classid == 1:
+                        no_face_shield.append(i)
+                    self.fmViolators = len(red_zone_list)
+                    self.fsViolators = len(red_zone_list)
 
             return av.VideoFrame.from_ndarray(image, format="bgr24")
 
@@ -258,6 +273,12 @@ def app_object_detection():
         video_processor_factory=Video,
         async_processing=True,
     )
+
+    while webrtc_ctx.video_processor:
+        if webrtc_ctx.video_processor:
+            kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
+            kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
+            kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
 
 
 if __name__ == "__main__":
