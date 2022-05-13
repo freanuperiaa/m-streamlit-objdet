@@ -26,8 +26,8 @@ from aiortc.contrib.media import MediaPlayer
 import time
 import pandas as pd
 import math
-from scipy.spatial import distance as dist
 from itertools import combinations
+import beepy
 
 from streamlit_webrtc import (
     AudioProcessorBase,
@@ -42,7 +42,7 @@ HERE = Path(__file__).parent
 logger = logging.getLogger(__name__)
 
 
-st.set_page_config(page_title="Object Detection", page_icon="🤖")
+st.set_page_config(page_title="Object Detection", page_icon="🧿")
 
 
 WEBRTC_CLIENT_SETTINGS = ClientSettings(
@@ -175,7 +175,7 @@ def convertBack(x, y, w, h):
 
 def app_object_detection():
 
-    checker = TimeForSoundChecker()
+    # checker = TimeForSoundChecker()
 
     class Video(VideoProcessorBase):
 
@@ -188,9 +188,9 @@ def app_object_detection():
             classes2, scores2, boxes2 = model2.detect(
                 image, Conf_threshold, NMS_threshold)
             
-            if checker.has_been_a_second():
-                if has_violations(classes2):
-                    play_alarm()
+            # if checker.has_been_a_second():
+            #     if has_violations(classes2):
+            #         play_alarm()
 
 
             centroids = []
@@ -232,8 +232,8 @@ def app_object_detection():
                 else:
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2)
                 
-                text = "Social Distancing Violations: {}".format(len(red_zone_list))
-                cv2.putText(image, text, (10, image.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
+            text = "Social Distancing Violations: {}".format(len(red_zone_list))
+            cv2.putText(image, text, (10, image.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
 
             for check in range(0, len(red_line_list)-1):					
                 start_point = red_line_list[check] 
