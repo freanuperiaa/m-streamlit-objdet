@@ -179,28 +179,9 @@ def convertBack(x, y, w, h):
     return xmin, ymin, xmax, ymax
 
 
-def app_object_detection(kpi1_text):
+def app_object_detection():
 
-    webrtc_ctx = webrtc_streamer(
-        key="object-detection",
-        mode=WebRtcMode.SENDRECV,
-        client_settings=WEBRTC_CLIENT_SETTINGS,
-        video_processor_factory=Video,
-        async_processing=True,
-    )
-
-    while webrtc_ctx.video_processor:
-        if webrtc_ctx.video_processor:
-            kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
-            # kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
-            # kpi3_text.write(str(webrtc_ctx.video_processor.fsViolators))
-
-class Video(VideoProcessorBase):
-
-        def __init__(self):
-            self.scViolators = 0
-            self.fmViolators = 0
-            self.fsViolators = 0
+    class Video(VideoProcessorBase):
 
         def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
             image = frame.to_ndarray(format="bgr24")
@@ -217,8 +198,6 @@ class Video(VideoProcessorBase):
             objectId = 0
             red_zone_list = []
             red_line_list = []
-            no_face_mask = []
-            no_face_shield = []
 
             for i , (classid, score, box) in enumerate (zip(classes, scores, boxes)):
                 if classid == 0:
@@ -252,7 +231,8 @@ class Video(VideoProcessorBase):
                 else:
                     cv2.rectangle(image, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2)
                 
-                self.scViolators = len(red_zone_list)
+            text = "Social Distancing Violations: {}".format(len(red_zone_list))
+            cv2.putText(image, text, (10, image.shape[0] - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
 
             for check in range(0, len(red_line_list)-1):					
                 start_point = red_line_list[check] 
@@ -262,8 +242,9 @@ class Video(VideoProcessorBase):
                 if (check_line_x < MIN_DISTANCE) and (check_line_y < 25):			
                     cv2.line(image, start_point, end_point, (255, 0, 0), 2) 
 
-            for i , (classid, score, box) in enumerate (zip(classes2, scores2, boxes2)):
+            for (classid, score, box) in zip(classes2, scores2, boxes2):
                 if classid != 4:
+                    
                     color = COLORS[int(classid) % len(COLORS)]
 
                     label = "%s : %f" % (class_name2[classid[0]], score)
@@ -271,14 +252,18 @@ class Video(VideoProcessorBase):
                     cv2.rectangle(image, box, color, 1)
                     cv2.putText(image, label, (box[0], box[1]-10),
                                 cv2.FONT_HERSHEY_COMPLEX, 0.5, color, 1)
-                    if classid == 3:
-                        no_face_mask.append(i)
-                    if classid == 1:
-                        no_face_shield.append(i)
-                    self.fmViolators = len(no_face_mask)
-                    self.fsViolators = len( no_face_shield)
 
             return av.VideoFrame.from_ndarray(image, format="bgr24")
+
+    webrtc_ctx = webrtc_streamer(
+        key="object-detection",
+        mode=WebRtcMode.SENDRECV,
+        client_settings=WEBRTC_CLIENT_SETTINGS,
+        video_processor_factory=Video,
+        async_processing=True,
+    )
+
+    
 
 
 if __name__ == "__main__":
