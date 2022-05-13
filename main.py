@@ -71,7 +71,7 @@ def main():
         st.markdown("Face Shield Violations")
         kpi3_text = st.markdown('0')
 
-    app_object_detection(kpi1_text)
+    app_object_detection(kpi1_text,kpi2_text,kpi3_text)
 
     st.error('Please allow access to camera and microphone in order for this to work')
     st.warning(
@@ -179,7 +179,7 @@ def convertBack(x, y, w, h):
     return xmin, ymin, xmax, ymax
 
 
-def app_object_detection():
+def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
 
     class Video(VideoProcessorBase):
 
