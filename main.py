@@ -6,10 +6,6 @@ import urllib.request
 from pathlib import Path
 from typing import List, NamedTuple
 
-import os
-
-from utils import Sound, TimeForSoundChecker, play_alarm, has_violations
-
 try:
     from typing import Literal
 except ImportError:
