@@ -42,7 +42,28 @@ st.set_page_config(page_title="Object Detection", page_icon="🧿")
 
 WEBRTC_CLIENT_SETTINGS = ClientSettings(
     rtc_configuration={"iceServers": [
-        {"urls": ["stun:stun.l.google.com:19302"]}]},
+        {
+            "urls": ["stun:stun.l.google.com:19302"]
+        },
+        {
+        "   urls": ["stun:openrelay.metered.ca:80"],
+        },
+        {
+            "urls": ["turn:openrelay.metered.ca:80"],
+            "username": "openrelayproject",
+            "credential": "openrelayproject",
+        },
+        {
+            "urls": ["turn:openrelay.metered.ca:443"],
+            "username": "openrelayproject",
+            "credential": "openrelayproject",
+        },
+        {
+            "urls": ["turn:openrelay.metered.ca:443?transport=tcp"],
+            "username": "openrelayproject",
+            "credential": "openrelayproject",
+        },
+    ]},
     media_stream_constraints={
         "video": True,
     },
@@ -106,7 +127,6 @@ OBJ = "/app/streamlitobjectdetection/models/obj.names"
 
 #Coco - Local
 #COCO = "models\\coco.names"
-
 
 # for reading all the datasets from the coco.names file into the array
 with open(COCO, 'rt') as f:
