@@ -265,7 +265,7 @@ def app_object_detection(kpi1_text,kpi2_text,kpi3_text):
         async_processing=True,
     )
 
-    while webrtc_ctx.async_processing:
+    while webrtc_ctx.video_processor:
         if webrtc_ctx.video_processor:
             kpi1_text.write(str(webrtc_ctx.video_processor.scViolators))
             kpi2_text.write(str(webrtc_ctx.video_processor.fmViolators))
