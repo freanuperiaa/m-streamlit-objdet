@@ -43,7 +43,7 @@ st.set_page_config(page_title="Object Detection", page_icon="🧿")
 WEBRTC_CLIENT_SETTINGS = ClientSettings(
     rtc_configuration={"iceServers": [
         {
-            "urls": ["stun1.l.google.com:19302"]
+            "urls": ["stun.nextcloud.com:443"]
         },
         # {
         #     "urls": ["stun:openrelay.metered.ca:80"],
